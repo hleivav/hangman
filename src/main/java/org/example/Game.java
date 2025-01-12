@@ -4,10 +4,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Game {
-    final String name;
-    final int attempts;
+    String name;
+    int attempts;
     String currentWord;
     int attemptsLeft;
     boolean isGameInProgress = true;
@@ -24,20 +25,28 @@ public class Game {
     public static final String ANSI_WHITE = "\u001B[37m";
 
     //constructor
-    public Game (String name, int attempts){
+    /*public Game (String name, int attempts){
         this.name = name;
         this.attempts = attempts;
-    }
+    }*/
 
-    public void start(){
-        GameHelper.populateCountryList();
+    public static class GameHelper {
+        public static void  start(){
+            Scanner scanner = new Scanner(System.in);
+            GameHelper.print("Wellcome to Hangman!");
+            GameHelper.print("What's your name?");
+            String playerName = scanner.nextLine();
+            GameHelper.print("How many attempts do you need to guess a country?");
+            int neededAttempts = Integer.parseInt(scanner.nextLine());
+            //Game game = new Game(playerName, neededAttempts);
+
+            GameHelper.populateCountryList();
         /*do {
 
 
         } while (isGameInProgress);*/
-    }
+        }
 
-    public static class GameHelper {
         public static void populateCountryList() {
             String currentDirectory = System.getProperty("user.dir");
             String filePath = currentDirectory + "/countries.txt";
@@ -50,17 +59,19 @@ public class Game {
                         countryList.add(line);
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
             countryArray = countryList.toArray(new String[0]);
+            for ( String c : countryArray){
+                GameHelper.print(c);
+            }
         }
-
 
         public static void print (char charToPrint){
             System.out.println(charToPrint);
         }
+
         public static void print (String stringToPrint){
             System.out.println(stringToPrint);
         }
