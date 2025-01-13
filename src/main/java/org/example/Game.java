@@ -11,8 +11,9 @@ public class Game {
     //variables
     static String name;
     static int attempts;
+    static int attemptsLeft;
     static String currentWord;
-    static List<Character> hiddenWord = new ArrayList<>();
+    static String hiddenWord;
     static boolean isGameInProgress = true;
     static List<String> countryList = new ArrayList<>();
     static Scanner scanner = new Scanner(System.in);
@@ -30,71 +31,96 @@ public class Game {
     public static class GameHelper {
         public static void  start(){
 
-            GameHelper.print("Wellcome to Hangman!");
-            GameHelper.print("What's your name?");
+            print("Wellcome to Hangman!");
+            print("What's your name?");
             String playerName = scanner.nextLine();
             print("Welcome " + playerName + "!");
-            GameHelper.print("How many attempts do you need to guess a country?");
+            print("How many attempts do you need to guess a country?");
             attempts = Integer.parseInt(scanner.nextLine());
             populateCountryList();
-            currentWord = pickACountry();
-            hideCurrentCountry(currentWord);
 
+            guessNewCountry();
             do {
-
                 playTheGame();
             } while (isGameInProgress);
         }
 
-        public static void playTheGame(){
-            //check if the user got all the letters correctly.
-            //if yes, ask if the player wants to continue.
-            if (attempts > 0 ) {
-                findLetterInWord();
-            } else {
-                // ask if the player wants to continue.
-                // if not, next line
-                isGameInProgress = false;
-            }
+        public static void guessNewCountry(){
+            currentWord = pickACountry();
+            hiddenWord = currentWord;
+            attemptsLeft = attempts;
+            hideCurrentCountry();
 
+        }
+
+        public static void playTheGame(){
+            if (checkIfWordIsCorrect()){
+                print("Well done!");
+                if (anotherGame()) {
+                    guessNewCountry();
+                } else {
+                    isGameInProgress = false;
+                    return;
+                }
+            }
+            if (attemptsLeft == 0 ) {
+                print("I'm sorry. You couldn't guess the country. ");
+                if (anotherGame()) {
+                    guessNewCountry();
+                } else {
+                    isGameInProgress = false;
+                }
+            } else {
+                findLetterInWord();
+            }
+        }
+
+        public static boolean anotherGame(){
+            boolean result  = false;
+            print("Do you want to guess another word?");
+            if (scanner.nextLine().equalsIgnoreCase("Y")){
+                result = true;
+            }
+            return result;
         }
 
         public static boolean checkIfWordIsCorrect(){
-
-            return true;
+            boolean result = false;
+            if (currentWord.equals(hiddenWord)){
+                return true;
+            }
+            return result;
         }
 
-        public static void hideCurrentCountry(String country){
-
-            for (int i = 0; i < country.length(); i++) {
-                hiddenWord.add('-');
+        public static void hideCurrentCountry(){
+            StringBuilder sb = new StringBuilder(currentWord);
+            for (int i = 0; i < currentWord.length() ; i++) {
+                sb.setCharAt(i, '-');
             }
-            for (char letter : hiddenWord){
-                printSameLine('-');
-            }
+            hiddenWord = sb.toString();
+            print(hiddenWord);
             print("");
             print("Enter a letter you think this country has: ");
         }
 
         public static void findLetterInWord(){
             char userLetter = scanner.nextLine().charAt(0);
-
+            StringBuilder sb = new StringBuilder(hiddenWord);
             boolean success = false;
             for (int i = 0; i < currentWord.length() ; i++) {
                 if (userLetter == currentWord.charAt(i)){
-                    hiddenWord.set(i, userLetter);
+                    sb.setCharAt(i, userLetter);
                     success = true;
                 }
             }
+            hiddenWord = sb.toString();
             if (success){
                 print("Good guessed. You have " + attempts + " attempts. ");
             } else {
-                attempts -= 1;
-                print("Unfortunately that letter isn't in that country's name. You have " + attempts + " attempts left. ");
+                attemptsLeft -= 1;
+                print("Unfortunately that letter isn't in that country's name. You have " + attemptsLeft + " attempts left. ");
             }
-            for (char letter : hiddenWord){
-                GameHelper.printSameLine(letter);
-            }
+            print(hiddenWord);
             print("");
         }
 
