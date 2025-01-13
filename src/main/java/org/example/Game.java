@@ -9,7 +9,6 @@ import java.util.Random;
 
 public class Game {
     //variables
-    static String name;
     static int attempts;
     static int attemptsLeft;
     static String currentWord;
@@ -29,20 +28,64 @@ public class Game {
     public static final String ANSI_WHITE = "\u001B[37m";
 
     public static class GameHelper {
+
         public static void  start(){
 
-            print("Wellcome to Hangman!");
-            print("What's your name?");
+            print(ANSI_YELLOW + "Wellcome to Hangman!");
+            print(ANSI_YELLOW + "What's your name?");
             String playerName = scanner.nextLine();
-            print("Welcome " + playerName + "!");
-            print("How many attempts do you need to guess a country?");
-            attempts = Integer.parseInt(scanner.nextLine());
-            populateCountryList();
+            print(ANSI_CYAN + "Welcome " + playerName + "!");
+            attempts = getValidIntInput("How many attempts do you need to guess a country?");
 
+            populateCountryList();
             guessNewCountry();
             do {
                 playTheGame();
             } while (isGameInProgress);
+        }
+
+        public static int getValidIntInput(String question){ //check if the int isn't empty and is a numeric value
+            int userInput = 0;
+            boolean validInput = false;
+
+            while (!validInput) {
+                print(ANSI_CYAN + question);
+                String input = scanner.nextLine();
+
+                try {
+                    if (input.trim().isEmpty()){
+                        throw new IllegalArgumentException(ANSI_RED + "The input can not be empty. Try again.");
+                    }
+                    userInput = Integer.parseInt(input);
+                    validInput = true;
+                } catch (NumberFormatException e) {
+                    print(ANSI_RED + "You must enter a number. Try again. ");
+                } catch (IllegalArgumentException e) {
+                    print(e.getMessage());
+                }
+            }
+            return userInput;
+        }
+
+        public static char getValidCharInput(String question){ // check if the char isn't empty and is just one character long.
+            char userInput = '\0'; //initialize with nothing.
+            boolean validInput = false;
+
+            while (!validInput){
+                print(question);
+                String input = scanner.nextLine();
+
+                try {
+                    if (input.trim().isEmpty() || input.length() != 1) { //neither empty nor several characters
+                        throw new IllegalArgumentException(ANSI_RED + "You must enter a letter. Try again: ");
+                    }
+                    userInput = input.charAt(0);
+                    validInput = true;
+                } catch (IllegalArgumentException e) {
+                    print(e.getMessage());
+                }
+            }
+            return userInput;
         }
 
         public static void guessNewCountry(){
@@ -50,12 +93,11 @@ public class Game {
             hiddenWord = currentWord;
             attemptsLeft = attempts;
             hideCurrentCountry();
-
         }
 
         public static void playTheGame(){
             if (checkIfWordIsCorrect()){
-                print("Well done!");
+                print(ANSI_GREEN + "Well done!");
                 if (anotherGame()) {
                     guessNewCountry();
                 } else {
@@ -64,7 +106,7 @@ public class Game {
                 }
             }
             if (attemptsLeft == 0 ) {
-                print("I'm sorry. You couldn't guess the country. ");
+                print(ANSI_PURPLE + "I'm sorry. You couldn't guess the country. ");
                 if (anotherGame()) {
                     guessNewCountry();
                 } else {
@@ -86,8 +128,8 @@ public class Game {
 
         public static boolean checkIfWordIsCorrect(){
             boolean result = false;
-            if (currentWord.equals(hiddenWord)){
-                return true;
+            if (currentWord.equalsIgnoreCase(hiddenWord)){
+                result = true;
             }
             return result;
         }
@@ -99,26 +141,27 @@ public class Game {
             }
             hiddenWord = sb.toString();
             print(hiddenWord);
-            print("");
-            print("Enter a letter you think this country has: ");
+            //print("");
+            //print("Enter a letter you think this country has: ");
         }
 
         public static void findLetterInWord(){
-            char userLetter = scanner.nextLine().charAt(0);
+            char userLetter = getValidCharInput("Enter a letter you think this country has: ");
+            //getValidChar("Enter a letter you think this country has: ");
             StringBuilder sb = new StringBuilder(hiddenWord);
             boolean success = false;
             for (int i = 0; i < currentWord.length() ; i++) {
-                if (userLetter == currentWord.charAt(i)){
+                if (Character.toLowerCase(userLetter) == Character.toLowerCase(currentWord.charAt(i))){
                     sb.setCharAt(i, userLetter);
                     success = true;
                 }
             }
             hiddenWord = sb.toString();
             if (success){
-                print("Good guessed. You have " + attempts + " attempts. ");
+                print(ANSI_GREEN + "Good guessed. You have " + attemptsLeft + " attempts. ");
             } else {
                 attemptsLeft -= 1;
-                print("Unfortunately that letter isn't in that country's name. You have " + attemptsLeft + " attempts left. ");
+                print(ANSI_PURPLE + "Unfortunately that letter isn't in that country's name. You have " + attemptsLeft + " attempts left. ");
             }
             print(hiddenWord);
             print("");
@@ -146,19 +189,10 @@ public class Game {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //countryArray = countryList.toArray(new String[0]);
-        }
-
-        public static void print (char charToPrint){
-            System.out.println(charToPrint);
         }
 
         public static void print (String stringToPrint){
             System.out.println(stringToPrint);
-        }
-
-        public static void printSameLine(char charToPrint){
-            System.out.print(charToPrint);
         }
     }
 }
