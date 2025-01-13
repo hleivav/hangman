@@ -18,14 +18,11 @@ public class Game {
     static Scanner scanner = new Scanner(System.in);
 
     // ANSI escape-codes for colors
-    public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
     public static class GameHelper {
 
@@ -127,11 +124,7 @@ public class Game {
         }
 
         public static boolean checkIfWordIsCorrect(){
-            boolean result = false;
-            if (currentWord.equalsIgnoreCase(hiddenWord)){
-                result = true;
-            }
-            return result;
+            return  currentWord.equalsIgnoreCase(hiddenWord);
         }
 
         public static void hideCurrentCountry(){
@@ -141,13 +134,10 @@ public class Game {
             }
             hiddenWord = sb.toString();
             print(hiddenWord);
-            //print("");
-            //print("Enter a letter you think this country has: ");
         }
 
         public static void findLetterInWord(){
             char userLetter = getValidCharInput("Enter a letter you think this country has: ");
-            //getValidChar("Enter a letter you think this country has: ");
             StringBuilder sb = new StringBuilder(hiddenWord);
             boolean success = false;
             for (int i = 0; i < currentWord.length() ; i++) {
