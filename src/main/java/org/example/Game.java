@@ -130,7 +130,7 @@ public class Game {
         public static void hideCurrentCountry(){
             StringBuilder sb = new StringBuilder(currentWord);
             for (int i = 0; i < currentWord.length() ; i++) {
-                sb.setCharAt(i, '-');
+                sb.setCharAt(i, '*');
             }
             hiddenWord = sb.toString();
             print(hiddenWord);
